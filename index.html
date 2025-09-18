@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex, nofollow" />
+  <meta name="color-scheme" content="dark" />
+  <title>Cat Fantastic Pictures</title>
+  <link rel="icon" type="image/png" href='CatFan.png'>
+  <style>
+  /* --- Base / Reset --- */
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    margin: 0;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, "Noto Sans", sans-serif;
+    color: #e8e9ee;
+    background-color: #0a0b10; /* Solid base color */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+
+    /* No scrolling, fully centered */
+    height: 100svh;
+    min-height: 100vh;
+    overflow: clip;
+    display: grid;
+    place-items: center;
+    position: relative; /* Needed for the ::before pseudo-element */
+    isolation: isolate; /* Keeps blend modes contained */
+  }
+
+  /* --- Animated Nebula & Grain Background --- */
+  body::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+
+    /*
+     * LAYER 1: Subtle static grain texture for a cinematic feel.
+     * This is a tiny, semi-transparent repeating gradient.
+    */
+    background-image:
+      linear-gradient(to right, rgba(255,255,255,0.02) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255,255,255,0.02) 1px, transparent 1px),
+
+    /*
+     * LAYER 2: Large, soft, colored gradients for the "nebula".
+     * Using hsl() for easy color manipulation.
+    */
+      radial-gradient(ellipse 80% 70% at 20% -10%, hsla(220, 40%, 20%, 0.6), transparent),
+      radial-gradient(ellipse 80% 70% at 85% 115%, hsla(280, 40%, 25%, 0.5), transparent);
+
+    background-size: 2px 2px, 2px 2px, 100% 100%, 100% 100%;
+    background-repeat: repeat, repeat, no-repeat, no-repeat;
+    background-position: center, center, -60% -20%, 40% 60%;
+
+    /* Animation definition */
+    animation: move-glow 30s ease-in-out infinite alternate;
+    opacity: 0.8;
+  }
+
+  @keyframes move-glow {
+    to {
+      background-position: center, center, 60% 20%, -40% -60%;
+    }
+  }
+
+  /* --- Layout --- */
+  main {
+    display: grid;
+    gap: 1.2rem;
+    text-align: center;
+    padding: 6vmin;
+    max-width: 1000px;
+  }
+
+  /* --- Wordmark (placeholder) --- */
+  .logo {
+    font-size: clamp(12px, 2vmin, 16px);
+    letter-spacing: .35em;
+    text-transform: uppercase;
+    opacity: .75;
+    align-self: end;
+  }
+
+  /* --- Headline --- */
+  h1 {
+    margin: 0;
+    font-size: clamp(32px, 8.5vmin, 120px);
+    font-weight: 800;
+    letter-spacing: .01em;
+    line-height: .95;
+    isolation: isolate;
+  }
+  .star { margin: 0 .18em; opacity: .9; transform: translateY(-.04em); display: inline-block; }
+
+  /* Subtle shine on the second line */
+  .accent {
+    display: inline-block;
+    background-image: linear-gradient(90deg, #cfd3da, #ffffff 25%, #cfd3da 50%);
+    background-size: 200% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: shine 4s linear infinite;
+  }
+  @keyframes shine {
+    0%   { background-position: 200% 50%; }
+    100% { background-position:   0% 50%; }
+  }
+
+  /* --- Tagline --- */
+  p {
+    margin: 0;
+    font-size: clamp(12px, 2.2vmin, 18px);
+    opacity: .85;
+  }
+
+  /* Respect users who prefer less motion */
+  @media (prefers-reduced-motion: reduce) {
+    .accent { animation: none; }
+    body::before { animation: none; }
+  }
+
+  /* Avoid overscroll bounce on mobile */
+  html, body { overscroll-behavior: none; }
+</style>
+</head>
+<body>
+  <main aria-label="Coming soon">
+    <div class="logo">CAT&nbsp;FANTASTIC&nbsp;PICTURES</div>
+
+    <h1>
+      BIG THINGS <span class="star">✦</span><br />
+      <span class="accent">COMING&nbsp;SOON</span>
+    </h1>
+
+    <p>We’re in the edit bay. Back online shortly.</p>
+    <!-- Optional: add a contact email. Uncomment to use. -->
+    <!-- <p><a href="mailto:hello@yourstudio.com" style="color:inherit; text-decoration:underline;">hello@yourstudio.com</a></p> -->
+  </main>
+</body>
+</html>
