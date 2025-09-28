@@ -6,140 +6,710 @@
   <meta name="robots" content="noindex, nofollow" />
   <meta name="color-scheme" content="dark" />
   <title>Cat Fantastic Pictures</title>
-  <link rel="icon" type="image/png" href='CatFan.png'>
+  <link rel="icon" type="image/png" href="CatFan.png" />
   <style>
-  /* --- Base / Reset --- */
-  *, *::before, *::after { box-sizing: border-box; }
-  html, body { height: 100%; }
-  body {
-    margin: 0;
-    font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, "Noto Sans", sans-serif;
-    color: #e8e9ee;
-    background-color: #0a0b10; /* Solid base color */
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+    /* ---------------------------
+       Base / Reset / Tokens
+    --------------------------- */
+    *, *::before, *::after { box-sizing: border-box; }
+    :root{
+      --bg: #0a0b10;
+      --text: #e8e9ee;
+      --muted: #b8bbca;
+      --line: #252737;
+      --glass: rgba(13,15,24,.6);
+      --accent-1: #cfd3da; /* used in "shine" */
+      --accent-2: #ffffff;
+      --brand-shadow: 0 8px 40px rgba(114, 99, 255, .25);
+      --radius: 14px;
+      --nav-h: 64px;
+      --maxw: 1500px;
+      --maxw-wide: 1500px;  /* wider container for Projects */
+      --gap: clamp(16px, 3vmin, 28px);
 
-    /* No scrolling, fully centered */
-    height: 100svh;
-    min-height: 100vh;
-    overflow: clip;
-    display: grid;
-    place-items: center;
-    position: relative; /* Needed for the ::before pseudo-element */
-    isolation: isolate; /* Keeps blend modes contained */
-  }
-
-  /* --- Animated Nebula & Grain Background --- */
-  body::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-    pointer-events: none;
-
-    /*
-     * LAYER 1: Subtle static grain texture for a cinematic feel.
-     * This is a tiny, semi-transparent repeating gradient.
-    */
-    background-image:
-      linear-gradient(to right, rgba(255,255,255,0.02) 1px, transparent 1px),
-      linear-gradient(to bottom, rgba(255,255,255,0.02) 1px, transparent 1px),
-
-    /*
-     * LAYER 2: Large, soft, colored gradients for the "nebula".
-     * Using hsl() for easy color manipulation.
-    */
-      radial-gradient(ellipse 80% 70% at 20% -10%, hsla(220, 40%, 20%, 0.6), transparent),
-      radial-gradient(ellipse 80% 70% at 85% 115%, hsla(280, 40%, 25%, 0.5), transparent);
-
-    background-size: 2px 2px, 2px 2px, 100% 100%, 100% 100%;
-    background-repeat: repeat, repeat, no-repeat, no-repeat;
-    background-position: center, center, -60% -20%, 40% 60%;
-
-    /* Animation definition */
-    animation: move-glow 30s ease-in-out infinite alternate;
-    opacity: 0.8;
-  }
-
-  @keyframes move-glow {
-    to {
-      background-position: center, center, 60% 20%, -40% -60%;
+      /* DRY variable for the complex animated background */
+      --nebula-bg:
+        linear-gradient(to right, rgba(255,255,255,0.02) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255,255,255,0.02) 1px, transparent 1px),
+        radial-gradient(ellipse 80% 70% at 20% -10%, hsla(220, 40%, 20%, 0.6), transparent),
+        radial-gradient(ellipse 80% 70% at 85% 115%, hsla(280, 40%, 25%, 0.5), transparent);
     }
-  }
+    html, body { height: 100%; }
+    html { scroll-behavior: smooth; scroll-padding-top: var(--nav-h); }
+    body{
+      margin: 0;
+      color: var(--text);
+      background: var(--bg);
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, "Noto Sans", sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
 
-  /* --- Layout --- */
-  main {
-    display: grid;
-    gap: 1.2rem;
-    text-align: center;
-    padding: 6vmin;
-    max-width: 1000px;
-  }
+      /* Animated nebula + grain (kept from current version) */
+      position: relative;
+      isolation: isolate;
+    }
+    body::before{
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      background-image: var(--nebula-bg);
+      background-size: 2px 2px, 2px 2px, 100% 100%, 100% 100%;
+      background-repeat: repeat, repeat, no-repeat, no-repeat;
+      background-position: center, center, -60% -20%, 40% 60%;
+      animation: move-glow 30s ease-in-out infinite alternate;
+      opacity: .8;
+    }
+    @keyframes move-glow { to { background-position: center, center, 60% 20%, -40% -60%; } }
 
-  /* --- Wordmark (placeholder) --- */
-  .logo {
-    font-size: clamp(12px, 2vmin, 16px);
-    letter-spacing: .35em;
-    text-transform: uppercase;
-    opacity: .75;
-    align-self: end;
-  }
+    /* Respect users who prefer less motion */
+    @media (prefers-reduced-motion: reduce) {
+      body::before { animation: none; }
+      .accent { animation: none; }
+      .poster-track { scroll-behavior: auto !important; }
+      .fade { animation: none !important; }
+    }
 
-  /* --- Headline --- */
-  h1 {
-    margin: 0;
-    font-size: clamp(32px, 8.5vmin, 120px);
-    font-weight: 800;
-    letter-spacing: .01em;
-    line-height: .95;
-    isolation: isolate;
-  }
-  .star { margin: 0 .18em; opacity: .9; transform: translateY(-.04em); display: inline-block; }
+    /* Layout helpers */
+    .wrap { width: min(100% - 2rem, var(--maxw)); margin-inline: auto; }
+    .wrap.wide { width: min(100% - 1rem, var(--maxw-wide)); } /* Projects only */
+    .section { padding: clamp(56px, 8vmin, 108px) 0; }
+    .section:not(:first-of-type){ border-top: 1px solid var(--line); }
+    .eyebrow {
+      font-size: .8rem; letter-spacing: .25em; text-transform: uppercase; opacity: .75;
+      text-align: left; /* Ensures all eyebrows are left-aligned */
+    }
+    h1, h2, h3 { margin: 0 0 .5rem; line-height: 1.05; letter-spacing: .01em; }
+    h2 { font-size: clamp(26px, 5.5vmin, 48px); position: relative; display: inline-block; }
+    p { margin: .5rem 0 0; color: var(--muted); font-size: clamp(14px, 2.3vmin, 18px); }
+    a { color: inherit; }
+    .muted { color: var(--muted); }
 
-  /* Subtle shine on the second line */
-  .accent {
-    display: inline-block;
-    background-image: linear-gradient(90deg, #cfd3da, #ffffff 25%, #cfd3da 50%);
-    background-size: 200% 100%;
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-    animation: shine 4s linear infinite;
-  }
-  @keyframes shine {
-    0%   { background-position: 200% 50%; }
-    100% { background-position:   0% 50%; }
-  }
+    /* ---------------------------
+       Top Navigation (glassy)
+    --------------------------- */
+    .nav{
+      position: sticky; top: 0; z-index: 10; height: var(--nav-h);
+      display: flex; align-items: center;
+      background: linear-gradient(to bottom, rgba(10,11,16,.85), rgba(10,11,16,.55));
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid rgba(255,255,255,.06);
+    }
+    .brand{
+      font-size: .85rem; letter-spacing: .35em; text-transform: uppercase; opacity: .85; white-space: nowrap;
+    }
+    .nav .wrap{ display: flex; align-items: center; gap: 1rem; }
+    .navlinks{
+      margin-left: auto; display: flex; gap: .4rem; align-items: center; flex-wrap: wrap;
+    }
+    .navlinks a{
+      display: inline-flex; align-items: center; justify-content: center;
+      height: 40px; padding: 0 .9rem; border-radius: 999px; text-decoration: none; font-size: .95rem;
+      border: 1px solid transparent; opacity: .9;
+    }
+    .navlinks a:hover{ background-color: rgba(255,255,255,.05); }
+    .navlinks a[aria-current="page"]{
+      border-color: rgba(255,255,255,.14); box-shadow: var(--brand-shadow);
+    }
 
-  /* --- Tagline --- */
-  p {
-    margin: 0;
-    font-size: clamp(12px, 2.2vmin, 18px);
-    opacity: .85;
-  }
+    /* Mobile nav toggle */
+    .menu-btn{ display: none; margin-left: auto; border: 1px solid rgba(255,255,255,.2); background: var(--glass);
+      height: 40px; width: 44px; border-radius: 10px; }
+    .menu-btn span{ display: block; margin: 0 auto; width: 18px; height: 2px; background: var(--text); position: relative; }
+    .menu-btn span::before, .menu-btn span::after{
+      content: ""; position: absolute; left: 0; right: 0; height: 2px; background: var(--text);
+      transform-origin: center; transition: .25s ease;
+    }
+    .menu-btn span::before{ top: -6px; }
+    .menu-btn span::after{ top: 6px; }
+    @media (max-width: 760px){
+      .menu-btn{ display: inline-block; }
+      .navlinks{ display: none; position: fixed; top: var(--nav-h); right: 0; left: 0;
+        background: rgba(10,11,16,.92); backdrop-filter: blur(10px); padding: .75rem; border-bottom: 1px solid rgba(255,255,255,.06); }
+      .navlinks.show{ display: grid; grid-template-columns: 1fr 1fr; gap: .5rem; }
+      .navlinks a{ justify-content: start; }
+      body.menu-open .menu-btn span{ background: transparent; }
+      body.menu-open .menu-btn span::before{ transform: translateY(6px) rotate(45deg); }
+      body.menu-open .menu-btn span::after{ transform: translateY(-6px) rotate(-45deg); }
+    }
 
-  /* Respect users who prefer less motion */
-  @media (prefers-reduced-motion: reduce) {
-    .accent { animation: none; }
-    body::before { animation: none; }
-  }
+    /* ---------------------------
+       Hero (Welcome) — full first viewport
+    --------------------------- */
+    .hero{
+      min-height: calc(100vh - var(--nav-h));       /* fallback */
+      min-height: calc(100svh - var(--nav-h));      /* ensures no peek on mobile */
+      display: grid; place-items: center; text-align: center;
+      padding: 8vmin 0;
+    }
+    .logo-wordmark{
+      font-size: clamp(12px, 2vmin, 16px);
+      letter-spacing: .35em; text-transform: uppercase; opacity: .75; margin-bottom: 1.2rem;
+    }
+    .hero h1{
+      font-size: clamp(32px, 8.5vmin, 120px);
+      font-weight: 800; letter-spacing: .01em; line-height: .95; margin: 0 0 .6rem;
+    }
+    .star{ margin: 0 .18em; opacity: .9; transform: translateY(-.04em); display: inline-block; }
+    .accent{
+      display: inline-block;
+      background-image: linear-gradient(90deg, var(--accent-1), var(--accent-2) 25%, var(--accent-1) 50%);
+      background-size: 200% 100%;
+      -webkit-background-clip: text; background-clip: text; color: transparent;
+      animation: shine 4s linear infinite;
+    }
+    @keyframes shine{ 0%{background-position: 200% 50%} 100%{background-position: 0% 50%} }
 
-  /* Avoid overscroll bounce on mobile */
-  html, body { overscroll-behavior: none; }
-</style>
+    /* ---------------------------
+       Cards / Grids / Placeholders
+    --------------------------- */
+    .grid{
+      display: grid; gap: var(--gap);
+      grid-template-columns: repeat(12, 1fr);
+    }
+    .grid.cols-3 > *{ grid-column: span 4; }
+    .grid.cols-2 > *{ grid-column: span 6; }
+    .grid.full > *{ grid-column: 1 / -1; }
+    @media (max-width: 900px){
+      .grid.cols-3 > *{ grid-column: span 6; }
+    }
+    @media (max-width: 600px){
+      .grid.cols-3 > *,
+      .grid.cols-2 > *{ grid-column: 1 / -1; }
+    }
+
+    .card{
+      background: linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,.01));
+      border: 1px solid rgba(255,255,255,.07);
+      border-radius: var(--radius);
+      overflow: clip;
+      box-shadow: 0 0 0 1px rgba(0,0,0,.25) inset, 0 8px 40px rgba(0,0,0,.25);
+    }
+    .card .body{ padding: 1rem 1rem 1.1rem; }
+    .title{ font-weight: 700; font-size: 1.05rem; }
+    .meta{ font-size: .95rem; color: var(--muted); }
+
+    /* Placeholder images (no external assets) */
+    .ph-head{
+      aspect-ratio: 1 / 1; /* team headshots */
+      background:
+        radial-gradient(circle at 30% 30%, rgba(255,255,255,.07), transparent 40%),
+        linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+      display: grid; place-items: center; color: rgba(255,255,255,.55);
+      font-size: .9rem;
+    }
+
+    /* ---------------------------
+       Poster Carousel (Projects)
+    --------------------------- */
+    .poster-carousel{
+      position: relative;
+      --cols: 4; /* shows 4 at once on wide screens */
+      --track-pad-top: .5rem;      /* matches .poster-track padding-block top */
+      --track-pad-bottom: 1rem;    /* matches .poster-track padding-block bottom */
+    }
+    @media (max-width: 1100px){ .poster-carousel{ --cols: 3; } }
+    @media (max-width: 780px){ .poster-carousel{ --cols: 2; } }
+    @media (max-width: 520px){ .poster-carousel{ --cols: 1; } }
+
+    .poster-track{
+      display: grid;
+      grid-auto-flow: column;
+      gap: var(--gap);
+      grid-auto-columns: calc((100% - (var(--gap) * (var(--cols) - 1))) / var(--cols));
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      scroll-behavior: smooth;
+      padding-block: var(--track-pad-top) var(--track-pad-bottom);
+      -ms-overflow-style: none; scrollbar-width: none;
+    }
+    .poster-track::-webkit-scrollbar{ display: none; }
+
+    .poster-card{
+      scroll-snap-align: start;
+      display: grid;
+      gap: .75rem; /* slightly more breathing room for bigger posters */
+      background: linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,.01));
+      border: 1px solid rgba(255,255,255,.07);
+      border-radius: var(--radius);
+      padding: .8rem; /* a hair larger than before */
+    }
+
+    .poster-image {
+      display: block;
+      width: 100%;
+      height: auto;
+      aspect-ratio: 2 / 3;
+      object-fit: cover;
+      border-radius: calc(var(--radius) - 6px);
+      box-shadow: 0 10px 40px rgba(0,0,0,.35);
+    }
+
+    .ph-poster{
+      aspect-ratio: 2 / 3; /* movie poster ratio */
+      border-radius: calc(var(--radius) - 6px);
+      background:
+        radial-gradient(120% 100% at 10% 0%, rgba(255,255,255,.06), transparent 40%),
+        repeating-linear-gradient(45deg, rgba(255,255,255,.07) 0 10px, rgba(255,255,255,.03) 10px 20px),
+        linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+      display: grid; place-items: center; color: rgba(255,255,255,.55);
+      font-size: .95rem; /* slightly larger placeholder label */
+      box-shadow: 0 10px 40px rgba(0,0,0,.35);
+    }
+
+    .poster-meta{ padding: 0 .2rem .2rem; }
+    .poster-title{ font-weight: 700; font-size: 1.12rem; } /* touch larger */
+    .poster-sub{ color: var(--muted); font-size: 1rem; }   /* touch larger */
+
+    .poster-nav{
+      position: absolute; top: 50%; translate: 0 -50%; z-index: 2;
+      width: 46px; height: 46px; border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.18);
+      background: var(--glass);
+      display: grid; place-items: center;
+      cursor: pointer;
+      box-shadow: var(--brand-shadow);
+    }
+    .poster-nav[disabled]{ opacity: .4; cursor: not-allowed; }
+    .poster-nav.left{ left: -8px; }
+    .poster-nav.right{ right: -8px; }
+
+    .fade{
+      position: absolute; top: 0; bottom: 0; width: 80px; /* Wider for smoother fade */
+      pointer-events: none; z-index: 1;
+        top: var(--track-pad-top);
+       bottom: var(--track-pad-bottom);
+  border-radius: var(--radius);   /* same round as the poster cards */
+      background-image: var(--nebula-bg);
+      background-size: 2px 2px, 2px 2px, 100% 100%, 100% 100%;
+      background-repeat: repeat, repeat, no-repeat, no-repeat;
+      background-position: center, center, -60% -20%, 40% 60%;
+      animation: move-glow 30s ease-in-out infinite alternate;
+    }
+    .fade.left{
+      left: 0;
+      /* Use a mask to create the fade effect */
+      -webkit-mask-image: linear-gradient(to right, var(--bg), transparent);
+      mask-image: linear-gradient(to right, var(--bg), transparent);
+    }
+    .fade.right{
+      right: 0;
+      /* Use a mask to create the fade effect */
+      -webkit-mask-image: linear-gradient(to left, var(--bg), transparent);
+      mask-image: linear-gradient(to left, var(--bg), transparent);
+    }
+
+    /* Lists with paw bullets */
+    .paw-list{ list-style: none; padding: 0; margin: .25rem 0 0; }
+    .paw-list li{ margin: .35rem 0; }
+    .paw-list li::before{
+      content: "🐾 ";
+      opacity: .7; font-size: .95em;
+    }
+
+    /* Contact panel */
+    .contact {
+  display: grid;
+  gap: var(--gap);
+  align-items: stretch; /* This makes the boxes equal height */
+  grid-template-columns: 1fr 1fr;
+}
+    @media (max-width: 800px){ .contact{ grid-template-columns: 1fr; } }
+    .panel {
+  background: linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,.01));
+  border: 1px solid rgba(255,255,255,.07);
+  border-radius: var(--radius);
+  padding: 1rem 1.2rem;
+  text-align: center;
+  /* Add these 3 lines for vertical centering */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+    .small { font-size: .9rem; }
+
+    /* Footer */
+    footer{
+      border-top: 1px solid var(--line);
+      padding: 2rem 0 4rem; color: var(--muted); font-size: .9rem;
+    }
+
+    /* Accessibility helpers */
+    .skip-link{
+      position: absolute; left: -9999px; top: 0; z-index: 100;
+      background: #11131c; color: #fff; padding: .5rem .75rem; border-radius: .5rem;
+    }
+    .skip-link:focus{ left: .5rem; top: .5rem; outline: 2px solid #fff; }
+  </style>
 </head>
 <body>
-  <main aria-label="Coming soon">
-    <div class="logo">CAT&nbsp;FANTASTIC&nbsp;PICTURES</div>
+  <a class="skip-link" href="#home">Skip to content</a>
 
-    <h1>
-      BIG THINGS <span class="star">✦</span><br />
-      <span class="accent">COMING&nbsp;SOON</span>
-    </h1>
+  <nav class="nav" aria-label="Primary">
+    <div class="wrap">
+      <div class="brand">CAT&nbsp;FANTASTIC&nbsp;PICTURES</div>
+      <button class="menu-btn" aria-label="Toggle menu" aria-expanded="false"><span></span></button>
+      <div class="navlinks" id="menu">
+        <a href="#home">Home</a>
+        <a href="#projects">The Projects</a>
+        <a href="#team">The Team</a>
+        <a href="#contact">Contact</a>
+      </div>
+    </div>
+  </nav>
 
-    <p>We’re in the edit bay. Back online shortly.</p>
-    <!-- Optional: add a contact email. Uncomment to use. -->
-    <!-- <p><a href="mailto:hello@yourstudio.com" style="color:inherit; text-decoration:underline;">hello@yourstudio.com</a></p> -->
-  </main>
+  <header id="home" class="hero section" aria-label="Home">
+    <div class="wrap">
+      <div class="logo-wordmark">CAT&nbsp;FANTASTIC&nbsp;PICTURES</div>
+      <h1>
+        <span class="accent">Welcome</span> <span class="star">✦</span><br />
+        to Cat Fantastic Pictures
+      </h1>
+      <p style="margin-top:4rem;"><a href="#projects">See the projects ↓</a></p>
+    </div>
+  </header>
+
+  <section id="projects" class="section" aria-labelledby="projects-title">
+    <div class="wrap">
+      <h2 id="projects-title">The Projects</h2>
+      <p class="muted">Posters ordered from the soonest release on the left → to later releases on the right.</p>
+
+      <div class="poster-carousel" role="region" aria-label="Projects carousel">
+        <button class="poster-nav left" aria-label="Scroll left" disabled>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M15 6l-6 6 6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+
+        <div class="poster-track" id="posterTrack" tabindex="0" aria-live="polite">
+          <article class="poster-card" data-year="2025">
+            <img src="Prick.png" alt="Poster for Prick" class="poster-image">
+            <div class="poster-meta">
+              <div class="poster-title">Prick (2025)</div>
+              <div class="poster-sub">Dir. Brian Foster · <a href="https://letterboxd.com/film/prick-2026/" target="_blank" rel="noopener">Letterboxd</a></div>
+            </div>
+          </article>
+
+          <article class="poster-card" data-year="2025">
+            <img src="Eve.png" alt="Poster for Eve" class="poster-image">
+            <div class="poster-meta">
+              <div class="poster-title">Eve (2025)</div>
+              <div class="poster-sub">Dir. Gerson Matias‑Ryan · <a href="https://letterboxd.com/film/eve-2026/" target="_blank" rel="noopener">Letterboxd</a></div>
+            </div>
+          </article>
+
+          <article class="poster-card" data-year="2025">
+            <div class="ph-poster" role="img" aria-label="Vape Club poster placeholder">Poster Coming Soon</div>
+            <div class="poster-meta">
+              <div class="poster-title">Vape Club (2025)</div>
+              <div class="poster-sub">Dir. Tabitha Randklev</div>
+            </div>
+          </article>
+
+          <article class="poster-card" data-year="2026">
+            <div class="ph-poster" role="img" aria-label="A Really, Really, Really Long Drive poster placeholder">Poster Coming Soon</div>
+            <div class="poster-meta">
+              <div class="poster-title">A Really, Really, Really Long Drive (2026)</div>
+              <div class="poster-sub">Dir. Tabitha Randklev</div>
+            </div>
+          </article>
+
+          <article class="poster-card" data-year="2026">
+            <div class="ph-poster" role="img" aria-label="The Best Wedding Anyone’s Ever Been To poster placeholder">Poster Coming Soon</div>
+            <div class="poster-meta">
+              <div class="poster-title">The Best Wedding Anyone’s Ever Been To (2026)</div>
+              <div class="poster-sub">Dir. Ryan Jahn</div>
+            </div>
+          </article>
+
+          <article class="poster-card" data-year="TBD">
+            <div class="ph-poster" role="img" aria-label="A Promotion at a Meat Shop poster placeholder">Poster Coming Soon</div>
+            <div class="poster-meta">
+              <div class="poster-title">A Promotion at a Meat Shop (TBD)</div>
+              <div class="poster-sub">Dir. Andrew Maddock</div>
+            </div>
+          </article>
+
+          <article class="poster-card" data-year="TBD">
+            <div class="ph-poster" role="img" aria-label="Dog/Walker poster placeholder">Poster Coming Soon</div>
+            <div class="poster-meta">
+              <div class="poster-title">Dog/Walker (TBD)</div>
+              <div class="poster-sub">Dir. Branden U. Smith</div>
+            </div>
+          </article>
+
+          <article class="poster-card" data-year="TBD">
+            <div class="ph-poster" role="img" aria-label="Untitled Superhero Short poster placeholder">Poster Coming Soon</div>
+            <div class="poster-meta">
+              <div class="poster-title">Untitled Superhero Short (TBD)</div>
+              <div class="poster-sub">Dir. Tabitha Randklev</div>
+            </div>
+          </article>
+
+        </div>
+
+        <button class="poster-nav right" aria-label="Scroll right">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+
+        <div class="fade left" aria-hidden="true"></div>
+        <div class="fade right" aria-hidden="true"></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="team" class="section" aria-labelledby="team-title">
+  <style>
+    /* ===== TEAM (scoped) ===== */
+    #team .team-max {
+      max-width: 1500px;
+      margin-inline: auto;
+    }
+
+    #team .team-grid {
+      display: grid;
+      gap: 1.25rem;
+      align-items: stretch;
+      justify-items: center;
+      text-align: left; /* Reset text-align for card content */
+    }
+    #team .grid-leaders { grid-template-columns: repeat(3, 1fr); }
+    #team .grid-support { grid-template-columns: repeat(4, 1fr); }
+
+    #team .team-card {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      padding: 1rem;
+    }
+    #team .headshot {
+      width: 110px;
+      height: 110px;
+      border-radius: 14px;
+    }
+    #team .body { margin-top: .5rem; display: flex; flex-direction: column; gap: .25rem; }
+    #team .title { font-weight: 600; }
+    #team .meta  { opacity: .85; font-size: .95rem; }
+    #team .bio   { opacity: .85; font-size: .9rem; line-height: 1.35; }
+
+    /* Responsive niceties */
+    @media (max-width: 1000px) {
+      #team .grid-leaders,
+      #team .grid-support { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 640px) {
+      #team .grid-leaders,
+      #team .grid-support { grid-template-columns: 1fr; }
+    }
+  </style>
+
+  <div class="wrap team-max">
+    <h2 id="team-title">The Team</h2>
+
+    <h3 style="margin-top:1rem;">Leadership</h3>
+    <div class="team-grid grid-leaders" style="margin-top:.75rem;">
+      <article class="card team-card">
+        <div class="ph-head headshot" role="img" aria-label="Headshot placeholder">Image</div>
+        <div class="body">
+          <div class="title">Tabitha Randklev</div>
+          <div class="meta">Director of Production &amp; Operations</div>
+          <p class="bio">Runs set logistics and budgets so shoots stay on time and on spec.</p>
+        </div>
+      </article>
+
+      <article class="card team-card">
+        <div class="ph-head headshot" role="img" aria-label="Headshot placeholder">Image</div>
+        <div class="body">
+          <div class="title">Branden U. Smith</div>
+          <div class="meta">Director of Creative Affairs</div>
+          <p class="bio">Owns story development and look, guiding concepts from pitch to picture lock.</p>
+        </div>
+      </article>
+
+      <article class="card team-card">
+        <div class="ph-head headshot" role="img" aria-label="Headshot placeholder">Image</div>
+        <div class="body">
+          <div class="title">Joshua Maddock</div>
+          <div class="meta">Director of Post-Production &amp; Marketing</div>
+          <p class="bio">Leads edit pipelines and campaigns that connect cuts to audiences.</p>
+        </div>
+      </article>
+    </div>
+
+    <h3 style="margin-top:1.75rem;">Creative &amp; Operations</h3>
+    <div class="team-grid grid-support" style="margin-top:.75rem;">
+      <article class="card team-card">
+        <div class="ph-head headshot" role="img" aria-label="Headshot placeholder">Image</div>
+        <div class="body">
+          <div class="title">Gerson Matias-Ryan</div>
+          <div class="meta">Creative Executive</div>
+          <p class="bio">Builds pitches, look-books, and treatments that translate ideas to set.</p>
+        </div>
+      </article>
+
+      <article class="card team-card">
+        <div class="ph-head headshot" role="img" aria-label="Headshot placeholder">Image</div>
+        <div class="body">
+          <div class="title">Andrew Maddock</div>
+          <div class="meta">Creative Executive</div>
+          <p class="bio">Keeps scripts, mood, and continuity aligned across departments.</p>
+        </div>
+      </article>
+
+      <article class="card team-card">
+        <div class="ph-head headshot" role="img" aria-label="Headshot placeholder">Image</div>
+        <div class="body">
+          <div class="title">Max Randklev</div>
+          <div class="meta">Web Development</div>
+          <p class="bio">Builds the site and automations powering releases, previews, and tooling.</p>
+        </div>
+      </article>
+
+      <article class="card team-card">
+        <div class="ph-head headshot" role="img" aria-label="Headshot placeholder">Image</div>
+        <div class="body">
+          <div class="title">Ladybug Randklev</div>
+          <div class="meta">Director of Fantastic Cats</div>
+          <p class="bio">Studio morale chief; enforces regular breaks.</p>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+ <section id="contact" class="section" aria-labelledby="contact-title">
+  <div class="wrap">
+    <h2 id="contact-title">Contact</h2>
+    <div class="contact" style="margin-top: .75rem;">
+      <div class="panel">
+        <h3 style="margin-top:0;">General Inquiries</h3>
+        <p><a href="mailto:inquiry@ycatfantasticpictures.com">inquiry@ycatfantasticpictures.com</a></p>
+      </div>
+      <div class="panel">
+        <h3 style="margin-top:0;">Follow</h3>
+        <p class="muted">Links to socials!</p>
+        <ul class="paw-list">
+          <li><a href="https://www.instagram.com/catfantasticpictures/" aria-disabled="false" class="muted">Instagram</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+  <footer role="contentinfo">
+    <div class="wrap">
+      <div class="muted">© <span id="year"></span> Cat Fantastic Pictures · All rights reserved.</div>
+    </div>
+  </footer>
+
+  <script>
+    // Current year
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Mobile menu
+    const body = document.body;
+    const btn = document.querySelector('.menu-btn');
+    const menu = document.getElementById('menu');
+    btn?.addEventListener('click', () => {
+      const open = body.classList.toggle('menu-open');
+      menu.classList.toggle('show', open);
+      btn.setAttribute('aria-expanded', String(open));
+    });
+    // Close menu on link click (mobile)
+    menu?.addEventListener('click', (e) => {
+      if(e.target.closest('a')){
+        body.classList.remove('menu-open');
+        menu.classList.remove('show');
+        btn.setAttribute('aria-expanded', 'false');
+      }
+    });
+
+    // Scrollspy for active nav link
+    const sections = [...document.querySelectorAll('section, header.hero')];
+    const navLinks = [...document.querySelectorAll('.navlinks a')];
+    const setActive = (id) => {
+      navLinks.forEach(a => a.removeAttribute('aria-current'));
+      const match = navLinks.find(a => a.getAttribute('href') === '#' + id);
+      if(match) match.setAttribute('aria-current', 'page');
+    };
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if(entry.isIntersecting){
+          setActive(entry.target.id || 'home');
+        }
+      });
+    }, { rootMargin: "-40% 0px -55% 0px", threshold: [0, 1] });
+    sections.forEach(s => io.observe(s));
+
+    // ---------------------------
+    // Projects poster carousel
+    // ---------------------------
+    const track = document.getElementById('posterTrack');
+    const leftBtn = document.querySelector('.poster-nav.left');
+    const rightBtn = document.querySelector('.poster-nav.right');
+
+    function getGapPx(el){ return parseFloat(getComputedStyle(el).gap || 0); }
+    function getItemWidth(){
+      const item = track.querySelector('.poster-card');
+      if(!item) return 0;
+      const rect = item.getBoundingClientRect();
+      return rect.width + getGapPx(track);
+    }
+    function visibleCols(){
+      const width = track.clientWidth;
+      const iw = getItemWidth() || 1;
+      return Math.max(1, Math.round(width / iw));
+    }
+    function maxIndex(){
+      const items = track.querySelectorAll('.poster-card').length;
+      return Math.max(0, items - visibleCols());
+    }
+    let index = 0;
+
+    function updateButtons(){
+      leftBtn.disabled = index <= 0;
+      rightBtn.disabled = index >= maxIndex();
+    }
+
+    function gotoIndex(i, smooth=true){
+      index = Math.max(0, Math.min(maxIndex(), i));
+      const x = index * getItemWidth();
+      track.scrollTo({ left: x, behavior: smooth ? 'smooth' : 'auto' });
+      updateButtons();
+    }
+
+    leftBtn.addEventListener('click', () => gotoIndex(index - visibleCols()));
+    rightBtn.addEventListener('click', () => gotoIndex(index + visibleCols()));
+
+    // Update on resize to keep pages aligned
+    let resizeTO;
+    window.addEventListener('resize', () => {
+      clearTimeout(resizeTO);
+      resizeTO = setTimeout(() => gotoIndex(index, false), 120);
+    });
+
+    // Keyboard support when track is focused
+    track.addEventListener('keydown', (e) => {
+      if(e.key === 'ArrowRight'){ e.preventDefault(); rightBtn.click(); }
+      if(e.key === 'ArrowLeft'){ e.preventDefault(); leftBtn.click(); }
+    });
+
+    // Init
+    updateButtons();
+  </script>
+  <script>
+  document.querySelectorAll('a[href^="http"]').forEach(a => {
+    if (!a.href.includes(location.hostname)) {
+      a.target = '_blank';
+      a.rel = 'noopener noreferrer';
+    }
+  });
+</script>
+
 </body>
 </html>
