@@ -44,7 +44,7 @@
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
 
-      /* Animated nebula + grain (kept from current version) */
+      /* Animated nebula + grain */
       position: relative;
       isolation: isolate;
     }
@@ -71,6 +71,31 @@
       .fade { animation: none !important; }
     }
 
+    /* ---------------------------
+       Intro Video Overlay
+    --------------------------- */
+    #intro-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 9999; /* Top level */
+      background: transparent; /* UPDATED: Allows alpha video to show site behind */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 1;
+      transition: opacity 0.8s ease, visibility 0.8s;
+      pointer-events: none; /* UPDATED: Allows clicks to pass through immediately */
+    }
+    #intro-overlay video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover; /* Ensures video fills screen */
+    }
+    #intro-overlay.hidden {
+      opacity: 0;
+      visibility: hidden;
+    }
+
     /* Layout helpers */
     .wrap { width: min(100% - 2rem, var(--maxw)); margin-inline: auto; }
     .wrap.wide { width: min(100% - 1rem, var(--maxw-wide)); } /* Projects only */
@@ -82,6 +107,7 @@
     }
     h1, h2, h3 { margin: 0 0 .5rem; line-height: 1.05; letter-spacing: .01em; }
     h2 { font-size: clamp(26px, 5.5vmin, 48px); position: relative; display: inline-block; }
+    h3 { font-size: 1.5rem; margin-top: 2rem; color: var(--accent-1); }
     p { margin: .5rem 0 0; color: var(--muted); font-size: clamp(14px, 2.3vmin, 18px); }
     a { color: inherit; }
     .muted { color: var(--muted); }
@@ -123,7 +149,7 @@
     }
     .menu-btn span::before{ top: -6px; }
     .menu-btn span::after{ top: 6px; }
-    @media (max-width: 760px){
+    @media (max-width: 900px){
       .menu-btn{ display: inline-block; }
       .navlinks{ display: none; position: fixed; top: var(--nav-h); right: 0; left: 0;
         background: rgba(10,11,16,.92); backdrop-filter: blur(10px); padding: .75rem; border-bottom: 1px solid rgba(255,255,255,.06); }
@@ -162,23 +188,13 @@
     @keyframes shine{ 0%{background-position: 200% 50%} 100%{background-position: 0% 50%} }
 
     /* ---------------------------
-       Cards / Grids / Placeholders
+       Cards / Grids
     --------------------------- */
     .grid{
       display: grid; gap: var(--gap);
       grid-template-columns: repeat(12, 1fr);
     }
-    .grid.cols-3 > *{ grid-column: span 4; }
-    .grid.cols-2 > *{ grid-column: span 6; }
-    .grid.full > *{ grid-column: 1 / -1; }
-    @media (max-width: 900px){
-      .grid.cols-3 > *{ grid-column: span 6; }
-    }
-    @media (max-width: 600px){
-      .grid.cols-3 > *,
-      .grid.cols-2 > *{ grid-column: 1 / -1; }
-    }
-
+    /* Simple generic card style */
     .card{
       background: linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,.01));
       border: 1px solid rgba(255,255,255,.07);
@@ -190,9 +206,9 @@
     .title{ font-weight: 700; font-size: 1.05rem; }
     .meta{ font-size: .95rem; color: var(--muted); }
 
-    /* Placeholder images (no external assets) */
+    /* Placeholder images */
     .ph-head{
-      aspect-ratio: 1 / 1; /* team headshots */
+      aspect-ratio: 1 / 1; 
       background:
         radial-gradient(circle at 30% 30%, rgba(255,255,255,.07), transparent 40%),
         linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
@@ -205,9 +221,9 @@
     --------------------------- */
     .poster-carousel{
       position: relative;
-      --cols: 4; /* shows 4 at once on wide screens */
-      --track-pad-top: .5rem;      /* matches .poster-track padding-block top */
-      --track-pad-bottom: 1rem;    /* matches .poster-track padding-block bottom */
+      --cols: 4; 
+      --track-pad-top: .5rem;      
+      --track-pad-bottom: 1rem;    
     }
     @media (max-width: 1100px){ .poster-carousel{ --cols: 3; } }
     @media (max-width: 780px){ .poster-carousel{ --cols: 2; } }
@@ -229,11 +245,11 @@
     .poster-card{
       scroll-snap-align: start;
       display: grid;
-      gap: .75rem; /* slightly more breathing room for bigger posters */
+      gap: .75rem; 
       background: linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,.01));
       border: 1px solid rgba(255,255,255,.07);
       border-radius: var(--radius);
-      padding: .8rem; /* a hair larger than before */
+      padding: .8rem; 
     }
 
     .poster-image {
@@ -247,20 +263,20 @@
     }
 
     .ph-poster{
-      aspect-ratio: 2 / 3; /* movie poster ratio */
+      aspect-ratio: 2 / 3; 
       border-radius: calc(var(--radius) - 6px);
       background:
         radial-gradient(120% 100% at 10% 0%, rgba(255,255,255,.06), transparent 40%),
         repeating-linear-gradient(45deg, rgba(255,255,255,.07) 0 10px, rgba(255,255,255,.03) 10px 20px),
         linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
       display: grid; place-items: center; color: rgba(255,255,255,.55);
-      font-size: .95rem; /* slightly larger placeholder label */
+      font-size: .95rem; 
       box-shadow: 0 10px 40px rgba(0,0,0,.35);
     }
 
     .poster-meta{ padding: 0 .2rem .2rem; }
-    .poster-title{ font-weight: 700; font-size: 1.12rem; } /* touch larger */
-    .poster-sub{ color: var(--muted); font-size: 1rem; }   /* touch larger */
+    .poster-title{ font-weight: 700; font-size: 1.12rem; } 
+    .poster-sub{ color: var(--muted); font-size: 1rem; }   
     .poster-logline {
       padding: 0 .2rem;
       margin: 0;
@@ -284,11 +300,11 @@
     .poster-nav.right{ right: -8px; }
 
     .fade{
-      position: absolute; top: 0; bottom: 0; width: 80px; /* Wider for smoother fade */
+      position: absolute; top: 0; bottom: 0; width: 80px; 
       pointer-events: none; z-index: 1;
-        top: var(--track-pad-top);
-       bottom: var(--track-pad-bottom);
-  border-radius: var(--radius);   /* same round as the poster cards */
+      top: var(--track-pad-top);
+      bottom: var(--track-pad-bottom);
+      border-radius: var(--radius);   
       background-image: var(--nebula-bg);
       background-size: 2px 2px, 2px 2px, 100% 100%, 100% 100%;
       background-repeat: repeat, repeat, no-repeat, no-repeat;
@@ -297,15 +313,27 @@
     }
     .fade.left{
       left: 0;
-      /* Use a mask to create the fade effect */
       -webkit-mask-image: linear-gradient(to right, var(--bg), transparent);
       mask-image: linear-gradient(to right, var(--bg), transparent);
     }
     .fade.right{
       right: 0;
-      /* Use a mask to create the fade effect */
       -webkit-mask-image: linear-gradient(to left, var(--bg), transparent);
       mask-image: linear-gradient(to left, var(--bg), transparent);
+    }
+
+    /* Future Section Grid */
+    .future-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: var(--gap);
+      margin-top: 1.5rem;
+    }
+    .future-card {
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
     }
 
     /* Lists with paw bullets */
@@ -318,23 +346,22 @@
 
     /* Contact panel */
     .contact {
-  display: grid;
-  gap: var(--gap);
-  align-items: stretch; /* This makes the boxes equal height */
-  grid-template-columns: 1fr 1fr;
-}
+      display: grid;
+      gap: var(--gap);
+      align-items: stretch; 
+      grid-template-columns: 1fr 1fr;
+    }
     @media (max-width: 800px){ .contact{ grid-template-columns: 1fr; } }
     .panel {
-  background: linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,.01));
-  border: 1px solid rgba(255,255,255,.07);
-  border-radius: var(--radius);
-  padding: 1rem 1.2rem;
-  text-align: center;
-  /* Add these 3 lines for vertical centering */
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
+      background: linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,.01));
+      border: 1px solid rgba(255,255,255,.07);
+      border-radius: var(--radius);
+      padding: 1rem 1.2rem;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
     .small { font-size: .9rem; }
 
     /* Footer */
@@ -349,9 +376,33 @@
       background: #11131c; color: #fff; padding: .5rem .75rem; border-radius: .5rem;
     }
     .skip-link:focus{ left: .5rem; top: .5rem; outline: 2px solid #fff; }
+
+    /* Collaborators list */
+    .collab-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      justify-content: center;
+      margin-top: 1rem;
+    }
+    .collab-tag {
+      padding: 0.5rem 1rem;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.1);
+      font-size: 0.95rem;
+      color: var(--muted);
+    }
   </style>
 </head>
 <body>
+  <div id="intro-overlay">
+    <video autoplay muted playsinline>
+      <source src="CatFantasticIntro.webm" type="video/webm">
+      <source src="CatFantasticIntro.mov" type="video/mov">
+    </video>
+  </div>
+
   <a class="skip-link" href="#home">Skip to content</a>
 
   <nav class="nav" aria-label="Primary">
@@ -360,7 +411,9 @@
       <button class="menu-btn" aria-label="Toggle menu" aria-expanded="false"><span></span></button>
       <div class="navlinks" id="menu">
         <a href="#home">Home</a>
+        <a href="#mission">The Mission</a>
         <a href="#projects">The Projects</a>
+        <a href="#future">The Future</a>
         <a href="#team">The Team</a>
         <a href="#contact">Contact</a>
       </div>
@@ -377,6 +430,18 @@
       <p style="margin-top:4rem;"><a href="#projects">See the projects ↓</a></p>
     </div>
   </header>
+
+  <section id="mission" class="section" aria-labelledby="mission-title">
+    <div class="wrap">
+        <h2 id="mission-title">The Mission</h2>
+        <div style="max-width: 800px; margin-top: 2rem;">
+            <p style="font-size: 1.2rem; line-height: 1.6;">
+                We’re in the editing bay working on our mission statement. 
+                Imagine something whimsically inspiring here about creating movies that matter, or at least movies that feature cats.
+            </p>
+        </div>
+    </div>
+  </section>
 
   <section id="projects" class="section" aria-labelledby="projects-title">
     <div class="wrap">
@@ -415,16 +480,34 @@
               <div class="poster-title">Vape Club (2025)</div>
               <div class="poster-sub">Dir. Tabitha Randklev</div>
             </div>
-            <p class="poster-logline">Logline: TBD</p>
+            <p class="poster-logline">Following a steep decline in sales of her school’s paper, the news staffs’ lowest performing reporter, Virginia, must go investigate the rumored freshmen-run underground “vape club” in order to keep her job.</p>
+          </article>
+
+          <article class="poster-card" data-year="2025">
+            <div class="ph-poster" role="img" aria-label="A Really, Really, Really Long Drive poster placeholder">Poster Coming Soon</div>
+            <div class="poster-meta">
+              <div class="poster-title">A Really, Really, Really Long Drive (2025)</div>
+              <div class="poster-sub">Dir. Tabitha Randklev</div>
+            </div>
+            <p class="poster-logline">A zombie apocalypse has just begun, but luckily for Cal, she managed to catch a ride with her semi-recent ex, Benny, and escape. However, hours in the car together proves to be difficult as they cope with the demise of their relationship.</p>
           </article>
 
           <article class="poster-card" data-year="2026">
-            <div class="ph-poster" role="img" aria-label="A Really, Really, Really Long Drive poster placeholder">Poster Coming Soon</div>
+            <div class="ph-poster" role="img" aria-label="My Stepdad’s a Minotaur poster placeholder">Poster Coming Soon</div>
             <div class="poster-meta">
-              <div class="poster-title">A Really, Really, Really Long Drive (2026)</div>
+              <div class="poster-title">My Stepdad’s a Minotaur (2026)</div>
               <div class="poster-sub">Dir. Tabitha Randklev</div>
             </div>
-            <p class="poster-logline">Logline: TBD</p>
+            <p class="poster-logline">Sixteen year old Theo’s seemingly average life is thrown into disarray when he’s introduced to his mom’s mysterious new boyfriend: a minotaur. Along with his geeky neighbor Perry, Theo does everything in his power to break the two up before it’s too late.</p>
+          </article>
+
+          <article class="poster-card" data-year="2026">
+            <div class="ph-poster" role="img" aria-label="JOB!! poster placeholder">Poster Coming Soon</div>
+            <div class="poster-meta">
+              <div class="poster-title">JOB!! (2026)</div>
+              <div class="poster-sub">Dir. Greer DuBois · Web Series</div>
+            </div>
+            <p class="poster-logline">A Perfectly Normal Employee works at their Perfectly Normal Job. Then, strange jam-related disasters start to happen outside.</p>
           </article>
 
           <article class="poster-card" data-year="2026">
@@ -433,34 +516,7 @@
               <div class="poster-title">The Best Wedding Anyone’s Ever Been To (2026)</div>
               <div class="poster-sub">Dir. Ryan Jahn</div>
             </div>
-            <p class="poster-logline">Logline: TBD</p>
-          </article>
-
-          <article class="poster-card" data-year="TBD">
-            <div class="ph-poster" role="img" aria-label="A Promotion at a Meat Shop poster placeholder">Poster Coming Soon</div>
-            <div class="poster-meta">
-              <div class="poster-title">A Promotion at a Meat Shop (TBD)</div>
-              <div class="poster-sub">Dir. Andrew Maddock</div>
-            </div>
-            <p class="poster-logline">Logline: TBD</p>
-          </article>
-
-          <article class="poster-card" data-year="TBD">
-            <div class="ph-poster" role="img" aria-label="Dog/Walker poster placeholder">Poster Coming Soon</div>
-            <div class="poster-meta">
-              <div class="poster-title">Dog/Walker (TBD)</div>
-              <div class="poster-sub">Dir. Branden U. Smith</div>
-            </div>
-            <p class="poster-logline">Logline: TBD</p>
-          </article>
-
-          <article class="poster-card" data-year="TBD">
-            <div class="ph-poster" role="img" aria-label="Untitled Superhero Short poster placeholder">Poster Coming Soon</div>
-            <div class="poster-meta">
-              <div class="poster-title">Untitled Superhero Short (TBD)</div>
-              <div class="poster-sub">Dir. Tabitha Randklev</div>
-            </div>
-            <p class="poster-logline">Logline: TBD</p>
+            <p class="poster-logline">A disparate group of friends, relatives, and partygoers unite for the wedding of the century. But with a depressed birthday clown, insane caterer, no wine and a snooping detective threatening to ruin the festivities, can this wedding still go off without a hitch?</p>
           </article>
 
         </div>
@@ -473,6 +529,39 @@
 
         <div class="fade left" aria-hidden="true"></div>
         <div class="fade right" aria-hidden="true"></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="future" class="section" aria-labelledby="future-title">
+    <div class="wrap">
+      <h2 id="future-title">The Future</h2>
+      <p class="muted">Upcoming projects and future company plans.</p>
+
+      <div class="future-grid">
+        <article class="card future-card">
+            <div class="title">A Promotion at a Meat Shop</div>
+            <div class="meta">Dir. Andrew Maddock</div>
+            <p>Coming soon.</p>
+        </article>
+
+        <article class="card future-card">
+            <div class="title">Dog/Walker</div>
+            <div class="meta">Dir. Branden U. Smith</div>
+            <p>Coming soon.</p>
+        </article>
+
+        <article class="card future-card">
+            <div class="title">I Love You, Jamie Lee Curtis</div>
+            <div class="meta">Dir. Tabitha Randklev</div>
+            <p>Coming soon.</p>
+        </article>
+
+        <article class="card future-card">
+            <div class="title">Overtime</div>
+            <div class="meta">Dir. Branden U. Smith</div>
+            <p>Coming soon.</p>
+        </article>
       </div>
     </div>
   </section>
@@ -527,7 +616,7 @@
   <div class="wrap team-max">
     <h2 id="team-title">The Team</h2>
 
-    <h3 style="margin-top:1rem;">Leadership</h3>
+    <h3>Leadership</h3>
     <div class="team-grid grid-leaders" style="margin-top:.75rem;">
       <article class="card team-card">
         <div class="ph-head headshot" role="img" aria-label="Headshot placeholder">Image</div>
@@ -557,7 +646,7 @@
       </article>
     </div>
 
-    <h3 style="margin-top:1.75rem;">Creative &amp; Operations</h3>
+    <h3>Creative &amp; Operations</h3>
     <div class="team-grid grid-support" style="margin-top:.75rem;">
       <article class="card team-card">
         <div class="ph-head headshot" role="img" aria-label="Headshot placeholder">Image</div>
@@ -582,7 +671,7 @@
         <div class="body">
           <div class="title">Max Randklev</div>
           <div class="meta">Web Development</div>
-          <p class="bio">Builds the site and automations powering releases, previews, and tooling.</p>
+          <p class="bio">Builds the site and automations powering releases, previews, and tooling on behalf of Navid Solutions.</p>
         </div>
       </article>
 
@@ -595,6 +684,21 @@
         </div>
       </article>
     </div>
+
+    <h3>Featured Collaborators</h3>
+    <div class="collab-list">
+        <div class="collab-tag">Evan Alexander</div>
+        <div class="collab-tag">Michael Barrella</div>
+        <div class="collab-tag">Greer DuBois</div>
+        <div class="collab-tag">Joel Forsberg</div>
+        <div class="collab-tag">Brian Foster</div>
+        <div class="collab-tag">Camille Jackson</div>
+        <div class="collab-tag">Patrick Loree</div>
+        <div class="collab-tag">Emily McCoy</div>
+        <div class="collab-tag">Ethan Serpan</div>
+        <div class="collab-tag">Caroline Sweeney</div>
+    </div>
+
   </div>
 </section>
 
@@ -619,13 +723,28 @@
 
   <footer role="contentinfo">
     <div class="wrap">
-      <div class="muted">© <span id="year"></span> Cat Fantastic Pictures · All rights reserved.</div>
+      <div class="muted">© <span id="year"></span> Cat Fantastic Pictures · All rights reserved. · NDP Certified</div>
     </div>
   </footer>
 
   <script>
     // Current year
     document.getElementById('year').textContent = new Date().getFullYear();
+
+    // ---------------------------
+    // Intro Video Logic
+    // ---------------------------
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        const overlay = document.getElementById('intro-overlay');
+        if(overlay) {
+          overlay.classList.add('hidden');
+          // Remove from DOM entirely after fade to save memory
+          setTimeout(() => overlay.remove(), 800);
+        }
+      }, 3500);
+    });
+
 
     // Mobile menu
     const body = document.body;
